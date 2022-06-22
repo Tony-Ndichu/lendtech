@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 
 const Counter = styled.h1``;
 
@@ -19,10 +18,12 @@ const MultiplicationWrapper = styled.div`
 `;
 
 const InputContainer = styled.div``;
+const EvenState = styled.div``;
 
 const Home = () => {
-  const [counterValue, setCounterValue] = useState(2);
+  const [counterValue, setCounterValue] = useState(3);
   const [counterColor, setCounterColor] = useState("");
+  const [counterValueIsEven, setCounterValueIsEven] = useState(false);
   const {
     register,
     reset,
@@ -48,16 +49,13 @@ const Home = () => {
     return new RegExp(/^-?\d*\.?\d+$/).test(multiplyInput);
   };
 
-  const checkIfCounterValueIsEven = () => {
-    const result = axios
-      .get(`https://api.isevenapi.xyz/api/${counterValue}/`, {headers: {"Access-Control-Allow-Origin": "*"}})
-      .then(function (response) {
-        // handle success
-        console.log("axios success======>", response);
+  const checkIfCounterValueIsEven = async () => {
+    await fetch(`https://api.isevenapi.xyz/api/iseven/${counterValue}/`)
+      .then((response) => {
+        return response.json();
       })
-      .catch(function (error) {
-        // handle error
-        console.log("axios error==========>", error);
+      .then(function (data) {
+        setCounterValueIsEven(data.iseven);
       });
   };
 
@@ -76,10 +74,12 @@ const Home = () => {
     checkIfCounterValueIsEven();
   }, [counterValue]);
 
-  console.log("counterColor=====>", counterColor);
   return (
     <>
       <Counter>{counterValue}</Counter>
+      <EvenState>{`The counter value ${
+        counterValueIsEven ? "IS" : "IS NOT"
+      } even`}</EvenState>
       <MultiplicationWrapper>
         <InputContainer>
           Multiply by:
