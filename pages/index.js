@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const Counter = styled.h1``;
 
@@ -21,6 +22,7 @@ const InputContainer = styled.div``;
 
 const Home = () => {
   const [counterValue, setCounterValue] = useState(2);
+  const [counterColor, setCounterColor] = useState("");
   const {
     register,
     reset,
@@ -42,9 +44,39 @@ const Home = () => {
     setCounterValue(squaredValue);
   };
 
-  const validateMultiplyValue = (multiplyInput) => {
-    return new RegExp("^[0-9]*$").test(multiplyInput);
+  const checkIfValueIsNumber = (multiplyInput) => {
+    return new RegExp(/^-?\d*\.?\d+$/).test(multiplyInput);
   };
+
+  const checkIfCounterValueIsEven = () => {
+    const result = axios
+      .get(`https://api.isevenapi.xyz/api/${counterValue}/`, {headers: {"Access-Control-Allow-Origin": "*"}})
+      .then(function (response) {
+        // handle success
+        console.log("axios success======>", response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log("axios error==========>", error);
+      });
+  };
+
+  useEffect(() => {
+    const colorCounterValue = () => {
+      if (Number.isInteger(counterValue)) {
+        setCounterColor("green");
+      } else if (!checkIfValueIsNumber(counterValue)) {
+        setCounterColor("red");
+      } else {
+        setCounterColor("black");
+      }
+    };
+
+    colorCounterValue();
+    checkIfCounterValueIsEven();
+  }, [counterValue]);
+
+  console.log("counterColor=====>", counterColor);
   return (
     <>
       <Counter>{counterValue}</Counter>
@@ -57,7 +89,7 @@ const Home = () => {
             {...register("multiply", {
               validate: {
                 checkValueIsNumber: (v) =>
-                  validateMultiplyValue(v) || "Please enter a number",
+                  checkIfValueIsNumber(v) || "Please enter a number",
               },
             })}
           />
