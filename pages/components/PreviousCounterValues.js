@@ -4,14 +4,13 @@ import { useState, useEffect } from "react";
 
 const Wrapper = styled.div``;
 const Title = styled.h2`
-text-decoration: underline;
-margin-top: 30px;
+  text-decoration: underline;
+  margin-top: 30px;
 `;
-const HistoryList = styled.ul`
-`;
+const HistoryList = styled.ul``;
 
 const ListItem = styled.li`
-margin-top: 10px;
+  margin-top: 10px;
 `;
 
 const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
@@ -19,7 +18,7 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
   const [currentItems, setCurrentItems] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
+  // following the API
   const [itemOffset, setItemOffset] = useState(0);
 
   useEffect(() => {
@@ -39,17 +38,17 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
     return (
       <HistoryList>
         {currentItems &&
-          currentItems.map((item) => (
-            <ListItem key={item}>{item}
-            </ListItem>
-          ))} <br/ >
+          currentItems.map((item, index) => (
+            <ListItem key={`${item} - ${index}`}>{item}</ListItem>
+          ))}{" "}
+        <br />
       </HistoryList>
     );
   };
 
   return (
     <Wrapper>
-    <Title>History</Title>
+      <Title>History</Title>
       <Items currentItems={currentItems} />
       <ReactPaginate
         breakLabel="..."

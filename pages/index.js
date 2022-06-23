@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import NewUserInput from "./components/NewUserInput";
 import PreviousCounterValues from "./components/PreviousCounterValues";
 
-const Counter = styled.h1`
+const Counter = styled.div`
   color: white;
   width: 80%;
   display: flex;
@@ -67,11 +67,13 @@ const InputContainer = styled.div`
   margin-top: 20px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 const EvenState = styled.div`
   color: ${(props) => props.color};
   text-align: center;
   width: 100%;
+  box-shadow: ${(props) => `0 0 5px ${props.color}`};
 `;
 
 const MultiplyText = styled.h2`
@@ -85,10 +87,8 @@ const InputAndButton = styled.div`
   justify-content: space-around;
 `;
 
-const DatasetButton = styled.button``;
-
 const Dropzone = styled.div`
-margin-top: 10%;
+  margin-top: 10%;
   font-weight: bold;
   border: 1px solid blue;
   color: white;
@@ -104,10 +104,14 @@ const Wrapper = styled.div`
   justify-content: center;
   width: 80%;
   margin: 0 auto;
+
+  @media (min-width:801px)  {
+    width: 30%;
+  }
 `;
 
 const Home = () => {
-  const [counterValue, setCounterValue] = useState(3);
+  const [counterValue, setCounterValue] = useState(2);
   const [counterColor, setCounterColor] = useState("");
   const [counterValueIsEven, setCounterValueIsEven] = useState(false);
   const [counterInputValue, setCounterInputValue] = useState(2);
@@ -162,6 +166,13 @@ const Home = () => {
       })
       .then(function (data) {
         setCounterValueIsEven(data.iseven);
+        clearErrors("isEven");
+      })
+      .catch((error) => {
+        setError("isEven", {
+          type: "custom",
+          message: "Value cannot be used by isEven API",
+        });
       });
   };
 
@@ -175,15 +186,9 @@ const Home = () => {
     };
 
     colorCounterValue();
-    if (counterValue < maxCounterValue && Number.isInteger(counterValue)) {
-      checkIfCounterValueIsEven();
-    } 
-    // else {
-    //   setError("multiply", {
-    //     type: "custom",
-    //     message: "Value cannot be used by isEven API",
-    //   });
-    // }
+    checkIfCounterValueIsEven();
+    clearErrors("isEven");
+
     setCurrentRainbowIndex((currentRainbowIndex + 1) % rainbowColors.length);
   }, [counterValue]);
 
@@ -232,10 +237,13 @@ const Home = () => {
       <Counter counterColor={counterColor}>{counterValue}</Counter>
       {checkIfValueIsNumber(counterValue) ? (
         <>
-          {!errors.multiply && (
+          {!errors.multiply && !errors.isEven && (
             <EvenState color={rainbowColors[currentRainbowIndex]}>{`This ${
               counterValueIsEven ? "IS" : "IS NOT"
             } an even number`}</EvenState>
+          )}
+          {errors.isEven && (
+            <EvenState color="red">{errors.isEven.message}</EvenState>
           )}
           <MultiplicationWrapper>
             <InputContainer>
@@ -276,14 +284,13 @@ const Home = () => {
             onClick={() => {
               resetField("multiply");
               setCounterValue(3);
+              clearErrors("isEven");
             }}
           >
             Reset counter value
           </ResetButton>
 
-          <Dropzone
-            {...getRootProps()}
-          >
+          <Dropzone {...getRootProps()}>
             <DropzoneInput {...getInputProps()} />
             Click to select csv file
           </Dropzone>
@@ -297,6 +304,9 @@ const Home = () => {
           resetField={resetField}
           setCounterColor={setCounterColor}
           clearErrors={clearErrors}
+          checkIfCounterValueIsEven={checkIfCounterValueIsEven}
+          maxCounterValue={maxCounterValue}
+          counterValue={counterValue}
         />
       )}
       <PreviousCounterValues counterValues={formerCounterValues} />
