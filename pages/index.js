@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
+import { useDropzone } from "react-dropzone";
+import Papa from "papaparse";
 
 const Counter = styled.h1``;
 
@@ -17,20 +19,34 @@ const MultiplicationWrapper = styled.div`
   justify-content: space-between;
 `;
 
+const ResetButton = styled.button``;
+
 const InputContainer = styled.div``;
 const EvenState = styled.div``;
+
+const DatasetButton = styled.button``;
+const Dropzone = styled.div``;
+const DropzoneInput = styled.input``;
 
 const Home = () => {
   const [counterValue, setCounterValue] = useState(3);
   const [counterColor, setCounterColor] = useState("");
   const [counterValueIsEven, setCounterValueIsEven] = useState(false);
+  const [counterInputValue, setCounterInputValue] = useState(2);
+  const [maxCounterValue, setMaxCounterValue] = useState(999999);
+  const [parsedCsvData, setParsedCsvData] = useState([]);
   const {
     register,
     reset,
     formState: { errors },
     getValues,
+    resetField,
+    setError,
   } = useForm({
     mode: "onChange",
+    defaultValues: {
+      multiply: 2,
+    },
   });
 
   const multiplyCounterValue = () => {
@@ -71,26 +87,55 @@ const Home = () => {
     };
 
     colorCounterValue();
-    checkIfCounterValueIsEven();
+    if (counterValue < maxCounterValue) {
+      checkIfCounterValueIsEven();
+    } else {
+      setError("multiply", {
+        type: "custom",
+        message: "Exceeded maximum value",
+      });
+    }
   }, [counterValue]);
+
+  const parseFile = (file) => {
+    Papa.parse(file, {
+      header: true,
+      complete: (results) => {
+        setParsedCsvData(results.data);
+      },
+    });
+  };
+
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles.length) {
+      parseFile(acceptedFiles[0]);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragAccept, isDragReject } =
+    useDropzone({
+      onDrop,
+      accept: "text/csv",
+    });
 
   return (
     <>
       <Counter>{counterValue}</Counter>
-      <EvenState>{`The counter value ${
+      <EvenState>{`This number ${
         counterValueIsEven ? "IS" : "IS NOT"
-      } even`}</EvenState>
+      } an even number`}</EvenState>
       <MultiplicationWrapper>
         <InputContainer>
           Multiply by:
           <MultiplicationInput
             name="multiply"
-            defaultValue={2}
+            defaultValue={counterInputValue}
             {...register("multiply", {
               validate: {
                 checkValueIsNumber: (v) =>
                   checkIfValueIsNumber(v) || "Please enter a number",
               },
+              required: true,
             })}
           />
         </InputContainer>
@@ -99,9 +144,27 @@ const Home = () => {
         >
           Multiply
         </MultiplyButton>
+        <ResetButton
+          onClick={() => {
+            resetField("multiply");
+            setCounterValue(3);
+          }}
+        >
+          Reset
+        </ResetButton>
         {errors.multiply && <p>{errors.multiply.message}</p>}
       </MultiplicationWrapper>
       <SquareButton onClick={() => squareCounterValue()}>Square</SquareButton>
+      <Dropzone
+        {...getRootProps({
+          className: `dropzone 
+          ${isDragAccept && "dropzoneAccept"} 
+          ${isDragReject && "dropzoneReject"}`,
+        })}
+      >
+        <DropzoneInput {...getInputProps()} />
+        Click to select files
+      </Dropzone>
     </>
   );
 };
