@@ -2,6 +2,18 @@ import styled from "styled-components";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 
+const Wrapper = styled.div``;
+const Title = styled.h2`
+text-decoration: underline;
+margin-top: 30px;
+`;
+const HistoryList = styled.ul`
+`;
+
+const ListItem = styled.li`
+margin-top: 10px;
+`;
+
 const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
   const items = counterValues;
   const [currentItems, setCurrentItems] = useState(null);
@@ -13,7 +25,6 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
   useEffect(() => {
     // Fetch items from another resources.
     const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     setCurrentItems(items.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(items.length / itemsPerPage));
   }, [itemOffset, itemsPerPage, items]);
@@ -21,27 +32,24 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {
     const newOffset = (event.selected * itemsPerPage) % items.length;
-    console.log(
-      `User requested page number ${event.selected}, which is offset ${newOffset}`
-    );
     setItemOffset(newOffset);
   };
 
   const Items = ({ currentItems }) => {
     return (
-      <>
+      <HistoryList>
         {currentItems &&
           currentItems.map((item) => (
-            <div>
-              <h3>{item}</h3>
-            </div>
+            <ListItem key={item}>{item}
+            </ListItem>
           ))} <br/ >
-      </>
+      </HistoryList>
     );
   };
 
   return (
-    <>
+    <Wrapper>
+    <Title>History</Title>
       <Items currentItems={currentItems} />
       <ReactPaginate
         breakLabel="..."
@@ -51,8 +59,18 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
         pageCount={pageCount}
         previousLabel="< previous"
         renderOnZeroPageCount={null}
+        containerClassName="pagination"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        activeClassName="active"
       />
-    </>
+    </Wrapper>
   );
 };
 

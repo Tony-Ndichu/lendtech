@@ -6,13 +6,46 @@ import Papa from "papaparse";
 import NewUserInput from "./components/NewUserInput";
 import PreviousCounterValues from "./components/PreviousCounterValues";
 
-const Counter = styled.h1``;
+const Counter = styled.h1`
+  color: white;
+  width: 80%;
+  display: flex;
+  text-align: center;
+  border-radius: 4px;
+  justify-content: center;
+  background-color: ${(props) =>
+    props.counterColor === "red" ? "red" : "#2ba805"};
+  box-shadow: ${(props) =>
+    props.counterColor === "red" ? "0 0 5px red" : "0 0 5px #2ba805"};
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
 
-const MultiplyButton = styled.button``;
+const MultiplyButton = styled.button`
+  font-weight: bold;
+  border: 1px solid blue;
+  color: white;
+  background-color: blue;
+`;
 
-const SquareButton = styled.button``;
+const SquareButton = styled.button`
+  margin-top: 10%;
+  font-weight: bold;
+  border: 1px solid blue;
+  color: white;
+  background-color: blue;
+  padding: 10px;
+`;
 
-const MultiplicationInput = styled.input``;
+const MultiplicationInput = styled.input`
+  width: 80%;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 20px;
+  color: black;
+  font-weight: bold;
+`;
 
 const MultiplicationWrapper = styled.div`
   display: flex;
@@ -21,14 +54,57 @@ const MultiplicationWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const ResetButton = styled.button``;
+const ResetButton = styled.button`
+  margin-top: 10%;
+  font-weight: bold;
+  border: 1px solid blue;
+  color: white;
+  background-color: blue;
+  padding: 10px;
+`;
 
-const InputContainer = styled.div``;
-const EvenState = styled.div``;
+const InputContainer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+const EvenState = styled.div`
+  color: ${(props) => props.color};
+  text-align: center;
+  width: 100%;
+`;
+
+const MultiplyText = styled.h2`
+  width: 100%;
+  text-align: center;
+`;
+
+const InputAndButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+`;
 
 const DatasetButton = styled.button``;
-const Dropzone = styled.div``;
+
+const Dropzone = styled.div`
+margin-top: 10%;
+  font-weight: bold;
+  border: 1px solid blue;
+  color: white;
+  background-color: blue;
+  padding: 10px;
+  text-align: center;
+`;
 const DropzoneInput = styled.input``;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+`;
 
 const Home = () => {
   const [counterValue, setCounterValue] = useState(3);
@@ -38,9 +114,12 @@ const Home = () => {
   const [maxCounterValue, setMaxCounterValue] = useState(999999);
   const [parsedCsvData, setParsedCsvData] = useState([]);
   const [formerCounterValues, setFormerCounterValues] = useState([]);
+  const [currentRainbowIndex, setCurrentRainbowIndex] = useState(0);
+
   const {
     register,
     reset,
+    clearErrors,
     formState: { errors },
     getValues,
     resetField,
@@ -92,20 +171,20 @@ const Home = () => {
         setCounterColor("green");
       } else if (!checkIfValueIsNumber(counterValue)) {
         setCounterColor("red");
-      } else {
-        setCounterColor("black");
       }
     };
 
     colorCounterValue();
     if (counterValue < maxCounterValue && Number.isInteger(counterValue)) {
       checkIfCounterValueIsEven();
-    } else {
-      setError("multiply", {
-        type: "custom",
-        message: "Exceeded maximum value",
-      });
-    }
+    } 
+    // else {
+    //   setError("multiply", {
+    //     type: "custom",
+    //     message: "Value cannot be used by isEven API",
+    //   });
+    // }
+    setCurrentRainbowIndex((currentRainbowIndex + 1) % rainbowColors.length);
   }, [counterValue]);
 
   const parseFile = (file) => {
@@ -138,47 +217,51 @@ const Home = () => {
       accept: "text/csv",
     });
 
+  const rainbowColors = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "indigo",
+    "violet",
+  ];
+
   return (
-    <>
-      <Counter>{counterValue}</Counter>
+    <Wrapper>
+      <Counter counterColor={counterColor}>{counterValue}</Counter>
       {checkIfValueIsNumber(counterValue) ? (
         <>
           {!errors.multiply && (
-            <EvenState>{`This number ${
+            <EvenState color={rainbowColors[currentRainbowIndex]}>{`This ${
               counterValueIsEven ? "IS" : "IS NOT"
             } an even number`}</EvenState>
           )}
           <MultiplicationWrapper>
             <InputContainer>
-              Multiply by:
-              <MultiplicationInput
-                name="multiply"
-                defaultValue={counterInputValue}
-                {...register("multiply", {
-                  validate: {
-                    checkValueIsNumber: (v) =>
-                      checkIfValueIsNumber(v) || "Please enter a number",
-                  },
-                  required: true,
-                })}
-              />
+              <MultiplyText>Multiply counter value by:</MultiplyText>
+
+              <InputAndButton>
+                <MultiplicationInput
+                  name="multiply"
+                  defaultValue={counterInputValue}
+                  {...register("multiply", {
+                    validate: {
+                      checkValueIsNumber: (v) =>
+                        checkIfValueIsNumber(v) || "Please enter a number",
+                    },
+                    required: true,
+                  })}
+                />
+                <MultiplyButton
+                  onClick={() => multiplyCounterValue()}
+                  disabled={!checkIfValueIsNumber(counterValue)}
+                >
+                  Multiply
+                </MultiplyButton>
+              </InputAndButton>
             </InputContainer>
 
-            <MultiplyButton
-              onClick={() => multiplyCounterValue()}
-              disabled={!checkIfValueIsNumber(counterValue)}
-            >
-              Multiply
-            </MultiplyButton>
-
-            <ResetButton
-              onClick={() => {
-                resetField("multiply");
-                setCounterValue(3);
-              }}
-            >
-              Reset
-            </ResetButton>
             {errors.multiply && <p>{errors.multiply.message}</p>}
           </MultiplicationWrapper>
 
@@ -186,18 +269,23 @@ const Home = () => {
             onClick={() => squareCounterValue()}
             disabled={!checkIfValueIsNumber(counterValue)}
           >
-            Square
+            Square counter value
           </SquareButton>
 
+          <ResetButton
+            onClick={() => {
+              resetField("multiply");
+              setCounterValue(3);
+            }}
+          >
+            Reset counter value
+          </ResetButton>
+
           <Dropzone
-            {...getRootProps({
-              className: `dropzone 
-          ${isDragAccept && "dropzoneAccept"} 
-          ${isDragReject && "dropzoneReject"}`,
-            })}
+            {...getRootProps()}
           >
             <DropzoneInput {...getInputProps()} />
-            Click to select files
+            Click to select csv file
           </Dropzone>
         </>
       ) : (
@@ -207,10 +295,12 @@ const Home = () => {
           setFormerCounterValues={setFormerCounterValues}
           checkIfValueIsNumber={checkIfValueIsNumber}
           resetField={resetField}
+          setCounterColor={setCounterColor}
+          clearErrors={clearErrors}
         />
       )}
       <PreviousCounterValues counterValues={formerCounterValues} />
-    </>
+    </Wrapper>
   );
 };
 

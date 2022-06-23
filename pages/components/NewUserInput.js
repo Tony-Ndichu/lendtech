@@ -9,6 +9,8 @@ const NewUserInput = ({
   setCounterValue,
   setFormerCounterValues,
   resetField,
+  setCounterColor,
+  clearErrors
 }) => {
   const {
     register,
@@ -27,11 +29,13 @@ const NewUserInput = ({
       });
     } else {
       setCounterValue(data.userInput);
+      setCounterColor("green")
       setFormerCounterValues((formerCounterValues) => [
         ...formerCounterValues,
         data.userInput,
       ]);
       resetField("multiply");
+      clearErrors();
     }
   };
 
