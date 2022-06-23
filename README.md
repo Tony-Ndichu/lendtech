@@ -2,11 +2,12 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-Install the dependencies: ```npm install```
-Run the development server: ```npm run dev```
+- Install the dependencies: ```npm install```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Run the development server: ```npm run dev```
+
+- Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Deployed on Vercel
 
-Here is the link to the vercel deployed site
+- Here is the link to the vercel deployed site
