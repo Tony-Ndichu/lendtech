@@ -4,7 +4,12 @@ const UserInput = styled.input``;
 const NewInputSubmit = styled.button``;
 import { useForm } from "react-hook-form";
 
-const NewUserInput = ({ checkIfValueIsNumber }) => {
+const NewUserInput = ({
+  checkIfValueIsNumber,
+  setCounterValue,
+  setFormerCounterValues,
+  resetField,
+}) => {
   const {
     register,
     handleSubmit,
@@ -14,18 +19,25 @@ const NewUserInput = ({ checkIfValueIsNumber }) => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (data, e) => {
+  const onSubmit = (data) => {
     if (!checkIfValueIsNumber(data.userInput)) {
       setError("userInput", {
         type: "custom",
         message: "Please enter a valid number",
       });
+    } else {
+      setCounterValue(data.userInput);
+      setFormerCounterValues((formerCounterValues) => [
+        ...formerCounterValues,
+        data.userInput,
+      ]);
+      resetField("multiply");
     }
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit, onError)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         Enter new input:{" "}
         <UserInput
           name="userInput"

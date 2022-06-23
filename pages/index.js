@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
-import NewUserInput from "./NewUserInput";
+import NewUserInput from "./components/NewUserInput";
+import PreviousCounterValues from "./components/PreviousCounterValues";
 
 const Counter = styled.h1``;
 
@@ -36,6 +37,7 @@ const Home = () => {
   const [counterInputValue, setCounterInputValue] = useState(2);
   const [maxCounterValue, setMaxCounterValue] = useState(999999);
   const [parsedCsvData, setParsedCsvData] = useState([]);
+  const [formerCounterValues, setFormerCounterValues] = useState([]);
   const {
     register,
     reset,
@@ -54,12 +56,20 @@ const Home = () => {
     const multiplyInputValue = getValues("multiply");
     let newValue = counterValue * multiplyInputValue;
     setCounterValue(newValue);
+    setFormerCounterValues((formerCounterValues) => [
+      ...formerCounterValues,
+      newValue,
+    ]);
   };
 
   const squareCounterValue = () => {
     const squaredValue = counterValue ** 2;
 
     setCounterValue(squaredValue);
+    setFormerCounterValues((formerCounterValues) => [
+      ...formerCounterValues,
+      squaredValue,
+    ]);
   };
 
   const checkIfValueIsNumber = (multiplyInput) => {
@@ -107,6 +117,10 @@ const Home = () => {
           const firstObject = results.data[0];
           const firstObjectValue = firstObject[Object.keys(firstObject)[0]];
           setCounterValue(firstObjectValue);
+          setFormerCounterValues((formerCounterValues) => [
+            ...formerCounterValues,
+            firstObjectValue,
+          ]);
         }
       },
     });
@@ -151,7 +165,7 @@ const Home = () => {
             </InputContainer>
 
             <MultiplyButton
-              onClick={() => (errors.multiply ? {} : multiplyCounterValue())}
+              onClick={() => multiplyCounterValue()}
               disabled={!checkIfValueIsNumber(counterValue)}
             >
               Multiply
@@ -187,8 +201,15 @@ const Home = () => {
           </Dropzone>
         </>
       ) : (
-        <NewUserInput checkIfValueIsNumber={checkIfValueIsNumber} />
+        <NewUserInput
+          formerCounterValues={formerCounterValues}
+          setCounterValue={setCounterValue}
+          setFormerCounterValues={setFormerCounterValues}
+          checkIfValueIsNumber={checkIfValueIsNumber}
+          resetField={resetField}
+        />
       )}
+      <PreviousCounterValues counterValues={formerCounterValues} />
     </>
   );
 };
