@@ -10,4 +10,4 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Deployed on Vercel
 
-- [Here is the link](https://lendtech-jcc3j2r95-tony-ndichu.vercel.app/) to the vercel deployed site for testing
+- [Here is the link](https://lendtech-tony-ndichu.vercel.app/) to the vercel deployed site for testing
