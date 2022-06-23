@@ -2,8 +2,11 @@ import styled from "styled-components";
 import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
 
-const Wrapper = styled.div``;
-const Title = styled.h2`
+const HistoryWrapper = styled.div`
+  display: block;
+  padding-top: 30px;
+`;
+const HistoryTitle = styled.h2`
   text-decoration: underline;
   margin-top: 30px;
 `;
@@ -22,7 +25,6 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
   const [itemOffset, setItemOffset] = useState(0);
 
   useEffect(() => {
-    // Fetch items from another resources.
     const endOffset = itemOffset + itemsPerPage;
     setCurrentItems(items.slice(itemOffset, endOffset));
     setPageCount(Math.ceil(items.length / itemsPerPage));
@@ -41,14 +43,15 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
           currentItems.map((item, index) => (
             <ListItem key={`${item} - ${index}`}>{item}</ListItem>
           ))}{" "}
+        {!currentItems && "No counter value yet"}
         <br />
       </HistoryList>
     );
   };
 
   return (
-    <Wrapper>
-      <Title>History</Title>
+    <HistoryWrapper>
+      <HistoryTitle>History</HistoryTitle>
       <Items currentItems={currentItems} />
       <ReactPaginate
         breakLabel="..."
@@ -69,7 +72,7 @@ const PreviousCounterValues = ({ counterValues, itemsPerPage = 5 }) => {
         breakLinkClassName="page-link"
         activeClassName="active"
       />
-    </Wrapper>
+    </HistoryWrapper>
   );
 };
 

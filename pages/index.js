@@ -20,6 +20,9 @@ const Counter = styled.div`
   margin: 0 auto;
   margin-top: 20px;
   margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 10px;
 `;
 
 const MultiplyButton = styled.button`
@@ -105,9 +108,13 @@ const Wrapper = styled.div`
   width: 80%;
   margin: 0 auto;
 
-  @media (min-width:801px)  {
+  @media (min-width: 801px) {
     width: 30%;
   }
+`;
+
+const PreviousCounterValuesWrapper = styled.div`
+  margin-top: 30px;
 `;
 
 const Home = () => {
@@ -117,7 +124,7 @@ const Home = () => {
   const [counterInputValue, setCounterInputValue] = useState(2);
   const [maxCounterValue, setMaxCounterValue] = useState(999999);
   const [parsedCsvData, setParsedCsvData] = useState([]);
-  const [formerCounterValues, setFormerCounterValues] = useState([]);
+  const [formerCounterValues, setFormerCounterValues] = useState([2]);
   const [currentRainbowIndex, setCurrentRainbowIndex] = useState(0);
 
   const {
@@ -188,7 +195,6 @@ const Home = () => {
     colorCounterValue();
     checkIfCounterValueIsEven();
     clearErrors("isEven");
-
     setCurrentRainbowIndex((currentRainbowIndex + 1) % rainbowColors.length);
   }, [counterValue]);
 
@@ -309,7 +315,9 @@ const Home = () => {
           counterValue={counterValue}
         />
       )}
-      <PreviousCounterValues counterValues={formerCounterValues} />
+      <PreviousCounterValuesWrapper>
+        <PreviousCounterValues counterValues={formerCounterValues} />
+      </PreviousCounterValuesWrapper>
     </Wrapper>
   );
 };
